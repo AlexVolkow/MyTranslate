@@ -1,0 +1,92 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical"
+                tools:context="com.volkov.alexandr.mytranslate.ui.TranslateFragment">
+
+    <RelativeLayout
+            android:id="@+id/custom_toolbar"
+            style="@style/Base.Widget.AppCompat.Toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:background="@android:color/holo_orange_light">
+
+        <TextView
+                android:text="Russian"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/iv_swap"
+                android:id="@+id/textView3" android:layout_centerInParent="true" android:textAlignment="textEnd"
+                android:paddingRight="10dp" android:textSize="18sp" android:textStyle="bold"/>
+        <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerInParent="true"
+                app:srcCompat="@drawable/ic_swap_horiz"
+                android:id="@+id/iv_swap"/>
+        <TextView
+                android:text="English"
+                android:layout_toRightOf="@+id/iv_swap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView2" android:layout_centerInParent="true" android:textAlignment="textStart"
+                android:paddingLeft="10dp" android:textSize="18sp" android:textStyle="bold"/>
+    </RelativeLayout>
+    <LinearLayout android:layout_width="match_parent"
+                  android:orientation="vertical"
+                  android:background="@drawable/stroke"
+                  android:layout_height="wrap_content"
+                  android:layout_below="@id/custom_toolbar"
+                  android:layout_alignParentStart="true" android:layout_margin="10dp">
+        <EditText
+                android:textSize="18sp"
+                android:id="@+id/translateEditText"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:hint="Enter text"
+                android:gravity="top"
+                android:inputType="textCapSentences"
+                android:autoText="true"
+                android:background="@null">
+
+        </EditText>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <Button
+                        android:id="@+id/buttonDeleteText"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/delete_text"
+                        android:visibility="visible"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:gravity="end"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <ImageButton
+                        android:id="@+id/btnAddFav"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/add_favorite"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:visibility="visible" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
