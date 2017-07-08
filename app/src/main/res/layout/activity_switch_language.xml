@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_switch_language"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.volkov.alexandr.mytranslate.ui.SwitchLanguage">
+
+    <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:id="@+id/back_toolbar"
+            android:background="@color/colorPrimary"
+            android:titleTextAppearance="@style/TextAppearance.AppCompat.Small"
+            android:layout_height="wrap_content" android:theme="@style/AppTheme"/>
+
+    <ListView
+            android:layout_below="@id/back_toolbar"
+            android:id="@+id/lang_list"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"/>
+
+</RelativeLayout>

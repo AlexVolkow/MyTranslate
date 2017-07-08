@@ -2,13 +2,16 @@ package com.volkov.alexandr.mytranslate.ui;
 
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import com.android.volley.VolleyError;
 import com.volkov.alexandr.mytranslate.R;
@@ -18,9 +21,14 @@ import com.volkov.alexandr.mytranslate.db.DBService;
 import com.volkov.alexandr.mytranslate.db.DBServiceImpl;
 import com.volkov.alexandr.mytranslate.api.Language;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.volkov.alexandr.mytranslate.LogHelper.makeLogTag;
+
 public class MainActivity extends AppCompatActivity implements ResponseListener<List<Language>> {
+    private static final String LOG_TAG = makeLogTag(MainActivity.class);
+
     private Fragment fragment;
     private FragmentManager fragmentManager;
     private ProgressDialog pd;
@@ -34,11 +42,11 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.pd = new ProgressDialog(this);
-        this.dbService = new DBServiceImpl(this);
-        this.langs = dbService.getLangs();
+        pd = new ProgressDialog(this);
+        dbService = new DBServiceImpl(this);
+        langs = dbService.getLangs();
 
-        this.api = new YandexApi(this);
+        api = new YandexApi(this);
 
         if (langs.isEmpty()) {
             pd.setMessage("List of languages downloading...");
@@ -48,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
         }
 
         fragmentManager = getSupportFragmentManager();
-        fragment = new TranslateFragment();
+        fragment = TranslateFragment.newInstance(Language.RU, Language.EN,
+                (ArrayList<Language>) langs);
         final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.fragment_container, fragment).commit();
 
@@ -64,7 +73,8 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
                         int currPage = 0;
                         switch (item.getItemId()) {
                             case R.id.action_translate:
-                                fragment = new TranslateFragment();
+                                fragment = TranslateFragment.newInstance(Language.RU, Language.EN,
+                                        (ArrayList<Language>) langs);
                                 currPage = 1;
                                 break;
                             case R.id.action_history:
@@ -94,7 +104,14 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
 
     @Override
     public void onErrorResponse(VolleyError error) {
-
+        if (pd.isShowing()) {
+            pd.hide();
+        }
+        Log.e(LOG_TAG, "Error with downloading list of languages. " +
+                "Please check you network connection and restart application");
+        showAlert("Error with downloading list of languages. " +
+                "Please check you network connection and restart application");
+        finish();
     }
 
     @Override
@@ -102,7 +119,22 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
         if (pd.isShowing()) {
             pd.hide();
         }
-        this.langs = response;
+        langs = response;
         dbService.addLangs(response);
+    }
+
+    public void showAlert(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Failed downloading")
+                .setMessage(msg)
+                .setCancelable(false)
+                .setNegativeButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

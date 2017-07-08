@@ -5,5 +5,5 @@
           android:title="@string/history"
           android:icon="@android:drawable/ic_menu_recent_history"/>
     <item android:id="@+id/action_about"
-          android:title="@string/setting" android:icon="@android:drawable/ic_menu_manage"/>
+          android:title="@string/about" android:icon="@android:drawable/ic_menu_manage"/>
 </menu>

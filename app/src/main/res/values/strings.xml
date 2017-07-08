@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">"MyTranslate "</string>
-    <string name="translate">Translate</string>
-    <string name="history">History</string>
-    <string name="setting">Setting</string>
+    <string name="translate">Переводчик</string>
+    <string name="history">История</string>
+    <string name="about">Информация</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
