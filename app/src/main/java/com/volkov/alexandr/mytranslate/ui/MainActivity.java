@@ -16,10 +16,12 @@ import android.view.MenuItem;
 import com.android.volley.VolleyError;
 import com.volkov.alexandr.mytranslate.R;
 import com.volkov.alexandr.mytranslate.api.ResponseListener;
-import com.volkov.alexandr.mytranslate.api.YandexApi;
+import com.volkov.alexandr.mytranslate.api.TranslateApi;
+import com.volkov.alexandr.mytranslate.model.Translate;
+import com.volkov.alexandr.mytranslate.model.Word;
 import com.volkov.alexandr.mytranslate.db.DBService;
 import com.volkov.alexandr.mytranslate.db.DBServiceImpl;
-import com.volkov.alexandr.mytranslate.api.Language;
+import com.volkov.alexandr.mytranslate.model.Language;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
 
     private DBService dbService;
     private List<Language> langs;
-    private YandexApi api;
+    private TranslateApi api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,18 +48,68 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
         dbService = new DBServiceImpl(this);
         langs = dbService.getLangs();
 
-        api = new YandexApi(this);
+        api = new TranslateApi(this);
 
         if (langs.isEmpty()) {
             pd.setMessage("List of languages downloading...");
             pd.setCancelable(false);
             pd.show();
             api.getLangs(this);
+        } else {
+            prepareBottomNavigation();
         }
+    }
 
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        if (pd.isShowing()) {
+            pd.hide();
+        }
+        Log.e(LOG_TAG, "Error with downloading list of languages. " + error);
+        showAlert("Error with downloading list of languages. " +
+                "Please check you network connection and restart application");
+        finish();
+    }
+
+    @Override
+    public void onResponse(List<Language> response) {
+        if (pd.isShowing()) {
+            pd.hide();
+        }
+        langs = response;
+        dbService.addLangs(response);
+
+        prepareBottomNavigation();
+    }
+
+    public void showAlert(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Failed downloading")
+                .setMessage(msg)
+                .setCancelable(false)
+                .setNegativeButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private Fragment makeTranslateFragment() {
+        Translate last = dbService.getLastTranslate();
+        if (last == null) {
+            Language ru = dbService.getLanguageByCode("ru");
+            Language en = dbService.getLanguageByCode("en");
+            last = new Translate(new Word(en), new Word(ru), false);
+        }
+        return TranslateFragment.newInstance(last, (ArrayList<Language>) langs);
+    }
+
+    private void prepareBottomNavigation() {
         fragmentManager = getSupportFragmentManager();
-        fragment = TranslateFragment.newInstance(Language.RU, Language.EN,
-                (ArrayList<Language>) langs);
+        fragment = makeTranslateFragment();
         final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.fragment_container, fragment).commit();
 
@@ -73,8 +125,7 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
                         int currPage = 0;
                         switch (item.getItemId()) {
                             case R.id.action_translate:
-                                fragment = TranslateFragment.newInstance(Language.RU, Language.EN,
-                                        (ArrayList<Language>) langs);
+                                fragment = makeTranslateFragment();
                                 currPage = 1;
                                 break;
                             case R.id.action_history:
@@ -100,41 +151,5 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
                         return true;
                     }
                 });
-    }
-
-    @Override
-    public void onErrorResponse(VolleyError error) {
-        if (pd.isShowing()) {
-            pd.hide();
-        }
-        Log.e(LOG_TAG, "Error with downloading list of languages. " +
-                "Please check you network connection and restart application");
-        showAlert("Error with downloading list of languages. " +
-                "Please check you network connection and restart application");
-        finish();
-    }
-
-    @Override
-    public void onResponse(List<Language> response) {
-        if (pd.isShowing()) {
-            pd.hide();
-        }
-        langs = response;
-        dbService.addLangs(response);
-    }
-
-    public void showAlert(String msg) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Failed downloading")
-                .setMessage(msg)
-                .setCancelable(false)
-                .setNegativeButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-        AlertDialog alert = builder.create();
-        alert.show();
     }
 }

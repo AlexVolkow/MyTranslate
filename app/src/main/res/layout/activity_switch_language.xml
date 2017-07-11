@@ -5,7 +5,7 @@
         android:id="@+id/activity_switch_language"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.volkov.alexandr.mytranslate.ui.SwitchLanguage">
+        tools:context="com.volkov.alexandr.mytranslate.ui.SwitchLanguageActivity">
 
     <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"

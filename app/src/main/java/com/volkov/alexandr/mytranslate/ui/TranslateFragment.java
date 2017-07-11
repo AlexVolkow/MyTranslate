@@ -3,7 +3,6 @@ package com.volkov.alexandr.mytranslate.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,45 +13,50 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.*;
 import com.android.volley.VolleyError;
 import com.volkov.alexandr.mytranslate.R;
-import com.volkov.alexandr.mytranslate.api.Language;
+import com.volkov.alexandr.mytranslate.model.Language;
 import com.volkov.alexandr.mytranslate.api.ResponseListener;
 import com.volkov.alexandr.mytranslate.api.ApiCode;
-import com.volkov.alexandr.mytranslate.api.YandexApi;
+import com.volkov.alexandr.mytranslate.api.TranslateApi;
+import com.volkov.alexandr.mytranslate.model.Translate;
+import com.volkov.alexandr.mytranslate.model.Word;
+import com.volkov.alexandr.mytranslate.db.DBService;
+import com.volkov.alexandr.mytranslate.db.DBServiceImpl;
 
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
 import static com.volkov.alexandr.mytranslate.LogHelper.makeLogTag;
-import static com.volkov.alexandr.mytranslate.ui.SwitchLanguage.LANG_KEY;
+import static com.volkov.alexandr.mytranslate.ui.SwitchLanguageActivity.LANG_KEY;
 
 
 public class TranslateFragment extends Fragment implements View.OnClickListener,
-        ResponseListener<Pair<ApiCode, String>> {
+        ResponseListener<Pair<ApiCode, Translate>> {
     private static final String LOG_TAG = makeLogTag(TranslateFragment.class);
 
-    public static final int SWITCH_LANGUAGE = 1;
-    public static final String FROM_KEY = "from";
-    public static final String TO_KEY = "to";
-    public static final String TEXT_KEY = "text";
-    public static final String CURR_LANG_KEY = "curr_lang";
-    public static final String LANGS_KEY = "langs";
+    private static final int SWITCH_LANGUAGE = 1;
+    private static final String FROM_KEY = "FROM";
+    private static final String TO_KEY = "TO";
+    public static final String CURR_LANG_KEY = "CURR_LANG";
+    public static final String LANGS_KEY = "LANGS";
+    private static final String TRANSLATE = "TRANSLATE";
 
     private Language from;
     private Language to;
+    private Translate last;
+
     private ArrayList<Language> langs;
-    private YandexApi api;
+    private DBService dbService;
+    private TranslateApi api;
 
     private TextView tvFrom;
     private TextView tvTo;
     private TextView tvTranslate;
     private TextView tvError;
     private Button btnRepeat;
+    private ToggleButton ibAddFavorite;
 
     public TranslateFragment() {
     }
@@ -61,12 +65,11 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        api = new YandexApi(getContext());
+        api = new TranslateApi(getContext());
+        dbService = new DBServiceImpl(getContext());
 
         Bundle args = getArguments();
         if (args != null) {
-            from = args.getParcelable(FROM_KEY);
-            to = args.getParcelable(TO_KEY);
             langs = args.getParcelableArrayList(LANGS_KEY);
         }
     }
@@ -75,12 +78,64 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_translate, container, false);
+
         tvFrom = (TextView) view.findViewById(R.id.tv_from);
         tvTo = (TextView) view.findViewById(R.id.tv_to);
         tvTranslate = (TextView) view.findViewById(R.id.tv_translate);
         btnRepeat = (Button) view.findViewById(R.id.btn_repeat);
         tvError = (TextView) view.findViewById(R.id.tv_error);
+        final EditText etTrText = (EditText) view.findViewById(R.id.et_trtext);
         ImageButton ibSwap = (ImageButton) view.findViewById(R.id.ib_swap);
+        ibAddFavorite = (ToggleButton) view.findViewById(R.id.ib_add_fav);
+        ImageButton trl = (ImageButton) view.findViewById(R.id.ib_translate);
+        final ImageButton ibDeleteText = (ImageButton) view.findViewById(R.id.ib_delete_text);
+        ibDeleteText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                etTrText.getText().clear();
+            }
+        });
+
+        Bundle args = getArguments();
+        if (args != null) {
+            last = args.getParcelable(TRANSLATE);
+
+            Word wordFrom = last.getFrom();
+            from = wordFrom.getLanguage();
+            tvFrom.setText(from.getLabel());
+            etTrText.setText(wordFrom.getText());
+
+            Word wordTo = last.getTo();
+            to = wordTo.getLanguage();
+            tvTo.setText(to.getLabel());
+            tvTranslate.setText(wordTo.getText());
+
+            ibAddFavorite.setChecked(last.isFavorite());
+        }
+
+        ibAddFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (last.getFrom().getText().isEmpty() ||
+                        last.getId() == 0) {
+                    Toast.makeText(getContext(), "Задан неккоректный перевод, пожалуста нажмите на кнопку для перевода" +
+                                    "или ожидайте ответа от сервера"
+                            , Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!last.isFavorite()) {
+                    dbService.makeFavorite(last);
+                    Toast.makeText(getContext(), "Перевод " + last + " добавлен в избранное", Toast.LENGTH_SHORT).show();
+                    Log.i(LOG_TAG, "Translate " + last + " added to favorite");
+                } else {
+                    dbService.makeUnFavorite(last);
+                    Toast.makeText(getContext(), "Перевод " + last + " убран в избранное", Toast.LENGTH_SHORT).show();
+                    Log.i(LOG_TAG, "Translate " + last + " removed from favorite");
+                }
+                ibAddFavorite.setChecked(!last.isFavorite());
+                last.setFavorite(!last.isFavorite());
+            }
+        });
 
         ibSwap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,11 +153,11 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
         tvFrom.setOnClickListener(this);
         tvTo.setOnClickListener(this);
 
-        final EditText etTrText = (EditText) view.findViewById(R.id.et_trtext);
         etTrText.setOnEditorActionListener(
                 new TextView.OnEditorActionListener() {
                     @Override
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        ibAddFavorite.setChecked(false);
                         if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE ||
                                 (event != null && event.getAction() == KeyEvent.ACTION_DOWN &&
                                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
@@ -115,11 +170,15 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
                     }
                 });
 
-        ImageButton trl = (ImageButton) view.findViewById(R.id.ib_translate);
         trl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               translate(etTrText.getText().toString());
+                String text = etTrText.getText().toString();
+                if (text.isEmpty()) {
+                    Toast.makeText(getContext(), "Введена пустая строка", Toast.LENGTH_SHORT).show();
+                } else {
+                    translate(text);
+                }
             }
         });
         return view;
@@ -127,7 +186,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
 
     private void translate(String text) {
         if (hasConnection(getContext())) {
-            api.translate(from, to, text, TranslateFragment.this);
+            api.translate(new Word(text, from), to, TranslateFragment.this);
         } else {
             failedTranslate();
             Log.e(LOG_TAG, "No internet connection for translate");
@@ -144,10 +203,9 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
         super.onDetach();
     }
 
-    public static Fragment newInstance(Parcelable from, Parcelable to, ArrayList<Language> langs) {
+    public static Fragment newInstance(Translate field, ArrayList<Language> langs) {
         Bundle arguments = new Bundle();
-        arguments.putParcelable(FROM_KEY, from);
-        arguments.putParcelable(TO_KEY, to);
+        arguments.putParcelable(TRANSLATE, field);
         arguments.putParcelableArrayList(LANGS_KEY, langs);
 
         TranslateFragment fragment = new TranslateFragment();
@@ -167,7 +225,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
             intent.setAction(TO_KEY);
             curr = to;
         }
-        intent.setClass(getContext(), SwitchLanguage.class);
+        intent.setClass(getContext(), SwitchLanguageActivity.class);
         intent.putParcelableArrayListExtra(LANGS_KEY, langs);
         intent.putExtra(CURR_LANG_KEY, curr);
         startActivityForResult(intent, SWITCH_LANGUAGE);
@@ -197,17 +255,49 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
     }
 
     @Override
-    public void onResponse(Pair<ApiCode, String> response) {
+    public void onResponse(Pair<ApiCode, Translate> response) {
         ApiCode code = response.first;
+        Translate field = response.second;
         if (code == ApiCode.OK) {
-            String text = response.second;
+            Word to = field.getTo();
+            String text = to.getText();
+
+            addTranslate(field);
+            last = field;
+
             tvTranslate.setText(text);
             btnRepeat.setVisibility(View.GONE);
             tvError.setVisibility(View.GONE);
+            ibAddFavorite.setChecked(field.isFavorite());
         } else {
             failedTranslate();
-            Log.e(LOG_TAG, "Failed translate text with code " + code);
+            Log.e(LOG_TAG, "Failed translate text " + field.getFrom() + " with code " + code);
         }
+    }
+
+    private void addWord(Word word) {
+        long id = dbService.findWord(word);
+        if (id > 0) {
+            word.setId(id);
+        } else {
+            id = dbService.addWord(word);
+            word.setId(id);
+            Log.i(LOG_TAG, "Add new word " + word);
+        }
+    }
+
+    private void addTranslate(Translate field) {
+        addWord(field.getFrom());
+        addWord(field.getTo());
+
+        long idField = dbService.findTranslate(field);
+        if (idField > 0) {
+            field.setFavorite(dbService.isFavoriteTranslate(idField));
+            dbService.deleteTranslateField(field);
+        }
+        long id = dbService.addTranslate(field);
+        field.setId(id);
+        Log.i(LOG_TAG, "Add new translate " + field);
     }
 
     private void failedTranslate() {
@@ -217,20 +307,17 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
     }
 
     public static boolean hasConnection(final Context context) {
-        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiInfo != null && wifiInfo.isConnected())
-        {
+        if (wifiInfo != null && wifiInfo.isConnected()) {
             return true;
         }
         wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (wifiInfo != null && wifiInfo.isConnected())
-        {
+        if (wifiInfo != null && wifiInfo.isConnected()) {
             return true;
         }
         wifiInfo = cm.getActiveNetworkInfo();
-        if (wifiInfo != null && wifiInfo.isConnected())
-        {
+        if (wifiInfo != null && wifiInfo.isConnected()) {
             return true;
         }
         return false;

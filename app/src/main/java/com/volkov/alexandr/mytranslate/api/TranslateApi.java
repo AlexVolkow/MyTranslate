@@ -8,6 +8,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.volkov.alexandr.mytranslate.model.Language;
+import com.volkov.alexandr.mytranslate.model.Translate;
+import com.volkov.alexandr.mytranslate.model.Word;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,8 +26,8 @@ import static com.volkov.alexandr.mytranslate.LogHelper.makeLogTag;
 /**
  * Created by AlexandrVolkov on 07.07.2017.
  */
-public class YandexApi {
-    private static final String LOG_TAG = makeLogTag(YandexApi.class);
+public class TranslateApi {
+    private static final String LOG_TAG = makeLogTag(TranslateApi.class);
 
     private static final String API_KEY =
             "trnsl.1.1.20170707T093646Z.ae8af46d0d3ae91f.fc80db8c48018769cb3736f0c75a6797f7dc818a";
@@ -34,7 +37,7 @@ public class YandexApi {
 
     private static RequestQueue queue;
 
-    public YandexApi(Context context) {
+    public TranslateApi(Context context) {
         if (queue == null) {
             queue = Volley.newRequestQueue(context);
         }
@@ -66,11 +69,12 @@ public class YandexApi {
         queue.add(request);
     }
 
-    public void translate(Language from, Language to, String text, final ResponseListener<Pair<ApiCode, String>> listener) {
-        String dir = from.getCode() + "-" + to.getCode();
-        String encodeText = text;
+    public void translate(final Word from, final Language toLanguage, final ResponseListener<Pair<ApiCode, Translate>> listener) {
+        Language fromLan = from.getLanguage();
+        String dir = fromLan.getCode() + "-" + toLanguage.getCode();
+        String encodeText = from.getText();
         try {
-            encodeText = URLEncoder.encode(text,"UTF8");
+            encodeText = URLEncoder.encode(from.getText(),"UTF8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -86,7 +90,10 @@ public class YandexApi {
                             if (text.length() != 0) {
                                 textString = text.getString(0);
                             }
-                            listener.onResponse(new Pair<>(ApiCode.parse(code), textString));
+                            Word to = new Word(textString, toLanguage);
+                            Translate field = new Translate(from, to, false);
+                            Log.i(LOG_TAG, "Translated text from = " + from + " to " + to);
+                            listener.onResponse(new Pair<>(ApiCode.parse(code), field));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

@@ -3,22 +3,20 @@ package com.volkov.alexandr.mytranslate.ui;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.volkov.alexandr.mytranslate.R;
-import com.volkov.alexandr.mytranslate.api.Language;
+import com.volkov.alexandr.mytranslate.model.Language;
 
 import java.util.ArrayList;
 
 import static com.volkov.alexandr.mytranslate.ui.TranslateFragment.CURR_LANG_KEY;
 import static com.volkov.alexandr.mytranslate.ui.TranslateFragment.LANGS_KEY;
 
-public class SwitchLanguage extends AppCompatActivity {
+public class SwitchLanguageActivity extends AppCompatActivity {
     public static final String LANG_KEY = "lang";
 
     private ArrayList<Language> langs;

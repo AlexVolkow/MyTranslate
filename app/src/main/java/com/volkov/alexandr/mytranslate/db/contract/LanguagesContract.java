@@ -1,4 +1,4 @@
-package com.volkov.alexandr.mytranslate.db;
+package com.volkov.alexandr.mytranslate.db.contract;
 
 import android.provider.BaseColumns;
 
@@ -16,7 +16,7 @@ public class LanguagesContract {
     }
 
     public static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + LanguagesEntry.TABLE_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + LanguagesEntry.TABLE_NAME + " (" +
                     LanguagesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     LanguagesEntry.COLUMN_CODE + " TEXT, " +
                     LanguagesEntry.COLUMN_LABEL + " TEXT)";

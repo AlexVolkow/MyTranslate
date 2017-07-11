@@ -108,13 +108,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                <ImageButton
+                <ToggleButton
                         android:id="@+id/ib_add_fav"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:src="@drawable/add_favorite"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:visibility="visible" />
+                        android:textOff=""
+                        android:textOn=""
+                        android:background="@drawable/add_favorite"
+                        android:visibility="visible" android:checked="false"/>
 
             </LinearLayout>
 
@@ -134,11 +135,11 @@
                 android:gravity="top"
                 android:ems="10"
                 android:lines="8"
-                android:minLines="6"
+                android:minLines="1"
                 android:maxLines="10"
                 android:scrollbars="vertical"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentTop="true"/>
+                android:layout_alignParentTop="true" android:layout_margin="5dp"/>
 
         <Button
                 android:text="@string/repeat"

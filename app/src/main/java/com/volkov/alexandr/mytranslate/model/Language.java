@@ -1,4 +1,4 @@
-package com.volkov.alexandr.mytranslate.api;
+package com.volkov.alexandr.mytranslate.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,15 +7,27 @@ import android.os.Parcelable;
  * Created by AlexandrVolkov on 07.07.2017.
  */
 public class Language implements Parcelable{
-    public static final Language RU = new Language("ru","Русский");
-    public static final Language EN = new Language("en","Английский");
-
+    private long id;
     private final String code;
     private final String label;
 
     public Language(String code, String label) {
         this.code = code;
         this.label = label;
+    }
+
+    public Language(long id, String code, String label) {
+        this.id = id;
+        this.code = code;
+        this.label = label;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getCode() {
@@ -56,11 +68,13 @@ public class Language implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
         dest.writeString(code);
         dest.writeString(label);
     }
 
     private Language(Parcel parcel) {
+        id = parcel.readLong();
         code = parcel.readString();
         label = parcel.readString();
     }
