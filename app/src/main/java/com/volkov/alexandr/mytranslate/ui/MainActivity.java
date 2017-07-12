@@ -3,6 +3,7 @@ package com.volkov.alexandr.mytranslate.ui;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -75,13 +76,10 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
 
     @Override
     public void onResponse(List<Language> response) {
-        if (pd.isShowing()) {
-            pd.hide();
-        }
         langs = response;
-        dbService.addLangs(response);
+        new LangsToDB().execute();
 
-        initBottomNavigation();
+        //initBottomNavigation();
     }
 
     public void showAlert(String msg) {
@@ -158,5 +156,21 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
                         return true;
                     }
                 });
+    }
+
+    private class LangsToDB extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void[] params) {
+            dbService.addLangs(langs);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (pd.isShowing()) {
+                pd.hide();
+            }
+            initBottomNavigation();
+        }
     }
 }

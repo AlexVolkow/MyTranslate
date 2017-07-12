@@ -114,10 +114,10 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
             ibAddFavorite.setChecked(last.isFavorite());
         }
 
-        tvError.setOnClickListener(new View.OnClickListener() {
+        btnRepeat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                translate(  );
+                translate();
             }
         });
 
@@ -189,7 +189,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
 
     private void translate() {
         if (hasConnection(getContext())) {
-            String text = etTrText.getText().toString();
+            String text = etTrText.getText().toString().trim();
             if (text.isEmpty()) {
                 Toast.makeText(getContext(), "Введена пустая строка", Toast.LENGTH_SHORT).show();
             } else {
@@ -259,7 +259,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void onErrorResponse(VolleyError error) {
-
+        // TODO processing error
     }
 
     @Override
@@ -299,6 +299,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
         addWord(field.getTo());
 
         long idField = dbService.findTranslate(field);
+        field.setId(idField);
         if (idField > 0) {
             field.setFavorite(dbService.isFavoriteTranslate(idField));
             dbService.deleteTranslateField(field);
@@ -309,7 +310,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
     }
 
     private void failedTranslate() {
-        tvTranslate.clearComposingText();
+        tvTranslate.setText("");
         tvError.setVisibility(View.VISIBLE);
         btnRepeat.setVisibility(View.VISIBLE);
     }

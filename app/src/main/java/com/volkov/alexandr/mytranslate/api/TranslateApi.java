@@ -92,7 +92,7 @@ public class TranslateApi {
                             }
                             Word to = new Word(textString, toLanguage);
                             Translate field = new Translate(from, to, false);
-                            Log.i(LOG_TAG, "Translated text from = " + from + " to " + to);
+                            Log.i(LOG_TAG, "Translated text from = " + from + " to = " + to);
                             listener.onResponse(new Pair<>(ApiCode.parse(code), field));
                         } catch (JSONException e) {
                             e.printStackTrace();
