@@ -3,12 +3,12 @@
     android:shareInterpolator="false">
 
     <translate
-        android:duration="400"
+        android:duration="300"
         android:fromXDelta="0%"
         android:toXDelta="-100%" />
 
     <alpha
-        android:duration="400"
+        android:duration="300"
         android:fromAlpha="1.0"
         android:toAlpha="0.0" />
 

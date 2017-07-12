@@ -1,0 +1,38 @@
+<RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        xmlns:android="http://schemas.android.com/apk/res/android" android:layout_margin="10dp">
+
+    <ToggleButton
+            android:id="@+id/tb_fav"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:textOff=""
+            android:textOn=""
+            android:background="@drawable/add_favorite"
+            android:visibility="visible" android:checked="false" android:layout_centerVertical="true"/>
+    <TextView
+            android:text="Распространитель"
+            android:id="@+id/tv_from_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/tb_fav"
+            android:textSize="17sp" android:layout_marginStart="10dp" android:textStyle="bold"/>
+    <TextView
+            android:text="distributor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_to_text"
+            android:textSize="16sp"
+            android:layout_below="@+id/tv_from_text" android:layout_alignStart="@+id/tv_from_text"/>
+    <TextView
+            android:id="@+id/tv_lang_tr"
+            android:text="RU-EN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tb_fav"
+            android:layout_alignBottom="@+id/tb_fav"
+            android:layout_alignParentEnd="true" android:textAllCaps="true" android:layout_centerVertical="true"/>
+
+</RelativeLayout>

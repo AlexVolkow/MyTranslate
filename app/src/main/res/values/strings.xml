@@ -3,8 +3,8 @@
     <string name="translate">Переводчик</string>
     <string name="history">История</string>
     <string name="about">Информация</string>
+    <string name="favorite">Избранное</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="enter_text">Введите текст</string>
     <string name="error_message">Проверьте интернет соединение</string>

@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
+                tools:context="com.volkov.alexandr.mytranslate.ui.history.HistoryManagerFragment">
+
+    <RelativeLayout
+            android:id="@+id/toolbar"
+            style="@style/Base.Widget.AppCompat.Toolbar"
+            android:layout_width="match_parent"
+            android:background="@color/colorPrimary"
+            android:layout_alignParentTop="true" android:layout_alignParentStart="true"
+            android:layout_height="?actionBarSize">
+
+        <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_gravity="center"
+                app:tabIndicatorColor="@android:color/black"
+                android:layout_height="match_parent"
+                android:layout_width="250dp"
+                android:layout_centerVertical="false"
+                android:layout_centerInParent="false"
+                android:layout_centerHorizontal="true">
+
+            <android.support.design.widget.TabItem
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/history"/>
+
+            <android.support.design.widget.TabItem
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/favorite"/>
+
+        </android.support.design.widget.TabLayout>
+    </RelativeLayout>
+
+    <android.support.v4.view.ViewPager
+            android:layout_below="@id/toolbar"
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+</RelativeLayout>

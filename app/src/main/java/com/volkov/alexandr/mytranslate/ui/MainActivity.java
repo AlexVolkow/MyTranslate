@@ -22,6 +22,7 @@ import com.volkov.alexandr.mytranslate.model.Word;
 import com.volkov.alexandr.mytranslate.db.DBService;
 import com.volkov.alexandr.mytranslate.db.DBServiceImpl;
 import com.volkov.alexandr.mytranslate.model.Language;
+import com.volkov.alexandr.mytranslate.ui.history.HistoryManagerFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import static com.volkov.alexandr.mytranslate.LogHelper.makeLogTag;
 
 public class MainActivity extends AppCompatActivity implements ResponseListener<List<Language>> {
     private static final String LOG_TAG = makeLogTag(MainActivity.class);
+    public static final int LIMIT = 100;
 
     private Fragment fragment;
     private FragmentManager fragmentManager;
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
             pd.show();
             api.getLangs(this);
         } else {
-            prepareBottomNavigation();
+            initBottomNavigation();
         }
     }
 
@@ -79,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
         langs = response;
         dbService.addLangs(response);
 
-        prepareBottomNavigation();
+        initBottomNavigation();
     }
 
     public void showAlert(String msg) {
@@ -107,7 +109,12 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
         return TranslateFragment.newInstance(last, (ArrayList<Language>) langs);
     }
 
-    private void prepareBottomNavigation() {
+    private Fragment makeHistoryFragment() {
+        ArrayList<Translate> translates = (ArrayList<Translate>) dbService.getTranslates(LIMIT);
+        return HistoryManagerFragment.newInstance(translates);
+    }
+
+    private void initBottomNavigation() {
         fragmentManager = getSupportFragmentManager();
         fragment = makeTranslateFragment();
         final FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -129,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
                                 currPage = 1;
                                 break;
                             case R.id.action_history:
-                                fragment = new HistoryFragment();
+                                fragment = makeHistoryFragment();
                                 currPage = 2;
                                 break;
                             case R.id.action_about:

@@ -109,7 +109,7 @@
                     android:layout_height="wrap_content">
 
                 <ToggleButton
-                        android:id="@+id/ib_add_fav"
+                        android:id="@+id/tb_add_fav"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:textOff=""

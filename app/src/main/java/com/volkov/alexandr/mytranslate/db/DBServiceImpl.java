@@ -11,7 +11,9 @@ import com.volkov.alexandr.mytranslate.db.contract.LanguagesContract.LanguagesEn
 import com.volkov.alexandr.mytranslate.db.contract.TranslateContract.TranslateEntry;
 import com.volkov.alexandr.mytranslate.db.contract.WordContract.WordEntry;
 
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,6 +24,7 @@ public class DBServiceImpl implements DBService {
     public static final String LANGS_ID = "lang_id";
 
     private DBHelper dbHelper;
+    //private static List<Translate> cache = new ArrayList<>();
 
     public DBServiceImpl(Context context) {
         this.dbHelper = new DBHelper(context);
@@ -111,6 +114,10 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public long addTranslate(Translate field) {
+       /* if (!cache.isEmpty()) {
+            cache.add(field);
+        }*/
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         Word from = field.getFrom();
@@ -147,6 +154,10 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public List<Translate> getTranslates(int limit) {
+       /* if (!cache.isEmpty() && limit > ) {
+            return new ArrayList<>(cache.subList(0, Math.min(cache.size(), limit)));
+        }*/
+
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String table = TranslateEntry.TABLE_NAME + " INNER JOIN " + WordEntry.TABLE_NAME + " ON "
@@ -192,7 +203,9 @@ public class DBServiceImpl implements DBService {
 
                 boolean isFavorite = c.getLong(favoriteColIndex) == 1;
 
-                fields.add(new Translate(id, from, to, isFavorite));
+                Translate tr = new Translate(id, from, to, isFavorite);
+                fields.add(tr);
+                //cache.add(tr);
             } while (c.moveToNext());
         }
         c.close();
@@ -254,6 +267,7 @@ public class DBServiceImpl implements DBService {
         String selection = TranslateEntry._ID + " = ?";
         String[] selectionArgs = { String.valueOf(field.getId()) };
 
+        //cache.remove(field);
         db.delete(TranslateEntry.TABLE_NAME, selection, selectionArgs);
     }
 

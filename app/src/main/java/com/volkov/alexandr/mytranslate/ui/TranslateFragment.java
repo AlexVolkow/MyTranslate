@@ -55,6 +55,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
     private TextView tvTo;
     private TextView tvTranslate;
     private TextView tvError;
+    private EditText etTrText;
     private Button btnRepeat;
     private ToggleButton ibAddFavorite;
 
@@ -84,9 +85,9 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
         tvTranslate = (TextView) view.findViewById(R.id.tv_translate);
         btnRepeat = (Button) view.findViewById(R.id.btn_repeat);
         tvError = (TextView) view.findViewById(R.id.tv_error);
-        final EditText etTrText = (EditText) view.findViewById(R.id.et_trtext);
+        etTrText = (EditText) view.findViewById(R.id.et_trtext);
         ImageButton ibSwap = (ImageButton) view.findViewById(R.id.ib_swap);
-        ibAddFavorite = (ToggleButton) view.findViewById(R.id.ib_add_fav);
+        ibAddFavorite = (ToggleButton) view.findViewById(R.id.tb_add_fav);
         ImageButton trl = (ImageButton) view.findViewById(R.id.ib_translate);
         final ImageButton ibDeleteText = (ImageButton) view.findViewById(R.id.ib_delete_text);
         ibDeleteText.setOnClickListener(new View.OnClickListener() {
@@ -112,6 +113,13 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
 
             ibAddFavorite.setChecked(last.isFavorite());
         }
+
+        tvError.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                translate(  );
+            }
+        });
 
         ibAddFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,7 +170,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
                                 (event != null && event.getAction() == KeyEvent.ACTION_DOWN &&
                                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                             if (event == null || !event.isShiftPressed()) {
-                                translate(v.getText().toString());
+                                translate();
                                 return true;
                             }
                         }
@@ -173,20 +181,20 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
         trl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String text = etTrText.getText().toString();
-                if (text.isEmpty()) {
-                    Toast.makeText(getContext(), "Введена пустая строка", Toast.LENGTH_SHORT).show();
-                } else {
-                    translate(text);
-                }
+                translate();
             }
         });
         return view;
     }
 
-    private void translate(String text) {
+    private void translate() {
         if (hasConnection(getContext())) {
-            api.translate(new Word(text, from), to, TranslateFragment.this);
+            String text = etTrText.getText().toString();
+            if (text.isEmpty()) {
+                Toast.makeText(getContext(), "Введена пустая строка", Toast.LENGTH_SHORT).show();
+            } else {
+                api.translate(new Word(text, from), to, TranslateFragment.this);
+            }
         } else {
             failedTranslate();
             Log.e(LOG_TAG, "No internet connection for translate");
