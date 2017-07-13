@@ -1,4 +1,4 @@
-package com.volkov.alexandr.mytranslate.ui;
+package com.volkov.alexandr.mytranslate.ui.history;
 
 import android.content.Context;
 import android.graphics.Canvas;

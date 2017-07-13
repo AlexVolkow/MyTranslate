@@ -11,7 +11,7 @@ import com.volkov.alexandr.mytranslate.R;
 import com.volkov.alexandr.mytranslate.db.DBService;
 import com.volkov.alexandr.mytranslate.db.DBServiceImpl;
 import com.volkov.alexandr.mytranslate.model.Translate;
-import com.volkov.alexandr.mytranslate.ui.SimpleDividerItemDecoration;
+import com.volkov.alexandr.mytranslate.ui.history.SimpleDividerItemDecoration;
 
 import java.util.ArrayList;
 
