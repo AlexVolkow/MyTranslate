@@ -56,8 +56,6 @@ public class Translate implements Parcelable{
 
         Translate field = (Translate) o;
 
-        if (id != field.id) return false;
-        if (isFavorite != field.isFavorite) return false;
         if (from != null ? !from.equals(field.from) : field.from != null) return false;
         return to != null ? to.equals(field.to) : field.to == null;
     }
@@ -66,7 +64,6 @@ public class Translate implements Parcelable{
     public int hashCode() {
         int result = from != null ? from.hashCode() : 0;
         result = 31 * result + (to != null ? to.hashCode() : 0);
-        result = 31 * result + (isFavorite ? 1 : 0);
         return result;
     }
 

@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
     public void onResponse(List<Language> response) {
         langs = response;
         new LangsToDB().execute();
-
-        //initBottomNavigation();
     }
 
     public void showAlert(String msg) {

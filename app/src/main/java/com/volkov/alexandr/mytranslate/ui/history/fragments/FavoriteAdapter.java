@@ -1,18 +1,24 @@
 package com.volkov.alexandr.mytranslate.ui.history.fragments;
 
-import com.volkov.alexandr.mytranslate.model.Translate;
+import android.util.Log;
+import android.view.View;
+import com.volkov.alexandr.mytranslate.db.DBService;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.volkov.alexandr.mytranslate.LogHelper.makeLogTag;
 
 /**
  * Created by AlexandrVolkov on 12.07.2017.
  */
 public class FavoriteAdapter extends HistoryAdapter {
-    public FavoriteAdapter(List<Translate> dataSet) {
-        super(dataSet);
-        List<Translate> favorite = new ArrayList<>();
-        for (Translate translate : dataSet) {
+    private static final String LOG_TAG = makeLogTag(FavoriteAdapter.class);
+
+    public FavoriteAdapter(List<TranslateObserver> dataSet, DBService dbService) {
+        super(dataSet, dbService);
+        List<TranslateObserver> favorite = new ArrayList<>();
+        for (TranslateObserver translate : dataSet) {
             if (translate.isFavorite()) {
                 favorite.add(translate);
             }
@@ -20,14 +26,26 @@ public class FavoriteAdapter extends HistoryAdapter {
         super.dataSet = favorite;
     }
 
-    public void addItem(Translate favorite) {
-        dataSet.add(0, favorite);
-        notifyItemChanged(0);
+    @Override
+    public void onBindViewHolder(final Holder holder, int position) {
+        super.onBindViewHolder(holder, position);
+        holder.fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TranslateObserver translate = dataSet.get(holder.getAdapterPosition());
+                dbService.makeUnFavorite(translate);
+                translate.setFavorite(false);
+                Log.i(LOG_TAG, "Translate " + translate + " removed from favorite");
+            }
+        });
     }
 
-    public void deleteItem(Translate favorite) {
-        int idx = dataSet.indexOf(favorite);
-        dataSet.remove(idx);
-        notifyItemRemoved(idx);
+    @Override
+    public void onFavoriteStatusChanged(TranslateObserver translate) {
+        if (!translate.isFavorite()) {
+            deleteItem(translate);
+        } else {
+            addItem(translate);
+        }
     }
 }

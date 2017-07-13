@@ -137,7 +137,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
                     Log.i(LOG_TAG, "Translate " + last + " added to favorite");
                 } else {
                     dbService.makeUnFavorite(last);
-                    Toast.makeText(getContext(), "Перевод " + last + " убран в избранное", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Перевод " + last + " убран из избранного", Toast.LENGTH_SHORT).show();
                     Log.i(LOG_TAG, "Translate " + last + " removed from favorite");
                 }
                 ibAddFavorite.setChecked(!last.isFavorite());
@@ -161,7 +161,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
         tvFrom.setOnClickListener(this);
         tvTo.setOnClickListener(this);
 
-        etTrText.setOnEditorActionListener(
+        /*etTrText.setOnEditorActionListener(
                 new TextView.OnEditorActionListener() {
                     @Override
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -176,7 +176,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
                         }
                         return false;
                     }
-                });
+                });*/
 
         trl.setOnClickListener(new View.OnClickListener() {
             @Override

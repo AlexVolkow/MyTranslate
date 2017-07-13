@@ -15,7 +15,7 @@ public class HistoryFragment extends BaseFragment {
 
     @Override
     protected RecyclerView.Adapter<Holder> getAdapter() {
-        return new HistoryAdapter(translates);
+        return new HistoryAdapter(favorites, dbService);
     }
 
     public static Fragment newInstance(ArrayList<Translate> translates) {

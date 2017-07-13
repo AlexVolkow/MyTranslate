@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.volkov.alexandr.mytranslate.R;
+import com.volkov.alexandr.mytranslate.db.DBService;
+import com.volkov.alexandr.mytranslate.db.DBServiceImpl;
 import com.volkov.alexandr.mytranslate.model.Translate;
 import com.volkov.alexandr.mytranslate.ui.SimpleDividerItemDecoration;
 
@@ -19,7 +21,8 @@ import static com.volkov.alexandr.mytranslate.ui.history.HistoryManagerFragment.
  * Created by AlexandrVolkov on 12.07.2017.
  */
 public abstract class BaseFragment extends Fragment {
-    protected ArrayList<Translate> translates;
+    protected ArrayList<TranslateObserver> favorites;
+    protected DBService dbService;
 
     public BaseFragment() {}
 
@@ -27,9 +30,17 @@ public abstract class BaseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        dbService = new DBServiceImpl(getContext());
+
         Bundle args = getArguments();
         if (args != null) {
-            translates = args.getParcelableArrayList(HISTORY);
+            ArrayList<Translate> translates = args.getParcelableArrayList(HISTORY);
+            favorites = new ArrayList<>();
+            for (Translate translate : translates) {
+                TranslateObserver favorite = new TranslateObserver(translate.getId(),translate.getFrom(),
+                        translate.getTo(),translate.isFavorite());
+                favorites.add(favorite);
+            }
         }
 
         View view =  inflater.inflate(R.layout.fragment_history, container, false);
