@@ -33,7 +33,7 @@ public class FavoriteAdapter extends HistoryAdapter {
             @Override
             public void onClick(View v) {
                 TranslateObserver translate = dataSet.get(holder.getAdapterPosition());
-                dbService.makeUnFavorite(translate);
+                dbService.makeUnFavorite(translate.getTranslate());
                 translate.setFavorite(false);
                 Log.i(LOG_TAG, "Translate " + translate + " removed from favorite");
             }

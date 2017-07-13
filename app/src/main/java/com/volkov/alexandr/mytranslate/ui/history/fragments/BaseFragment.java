@@ -37,8 +37,7 @@ public abstract class BaseFragment extends Fragment {
             ArrayList<Translate> translates = args.getParcelableArrayList(HISTORY);
             favorites = new ArrayList<>();
             for (Translate translate : translates) {
-                TranslateObserver favorite = new TranslateObserver(translate.getId(),translate.getFrom(),
-                        translate.getTo(),translate.isFavorite());
+                TranslateObserver favorite = new TranslateObserver(translate);
                 favorites.add(favorite);
             }
         }

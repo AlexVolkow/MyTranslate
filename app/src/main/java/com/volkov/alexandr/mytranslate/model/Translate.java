@@ -54,10 +54,10 @@ public class Translate implements Parcelable{
         if (this == o) return true;
         if (!(o instanceof Translate)) return false;
 
-        Translate field = (Translate) o;
+        Translate translate = (Translate) o;
 
-        if (from != null ? !from.equals(field.from) : field.from != null) return false;
-        return to != null ? to.equals(field.to) : field.to == null;
+        if (from != null ? !from.equals(translate.from) : translate.from != null) return false;
+        return to != null ? to.equals(translate.to) : translate.to == null;
     }
 
     @Override

@@ -24,10 +24,14 @@ public class DBServiceImpl implements DBService {
     public static final String LANGS_ID = "lang_id";
 
     private DBHelper dbHelper;
-    //private static List<Translate> cache = new ArrayList<>();
+    private static List<Translate> cache = new ArrayList<>();
+    private static int countTranslates = 0;
 
     public DBServiceImpl(Context context) {
         this.dbHelper = new DBHelper(context);
+        if (countTranslates == 0) {
+            countTranslates = getCountTranslates();
+        }
     }
 
     @Override
@@ -55,6 +59,23 @@ public class DBServiceImpl implements DBService {
         return langs;
     }
 
+    private int getCountTranslates() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] columns = new String[] { "COUNT(*) AS COUNT" };
+        Cursor c = db.query(TranslateEntry.TABLE_NAME, columns, null,
+                null, null, null, null);
+
+        int res = 0;
+        if (c.moveToFirst()) {
+            int countColIndex = c.getColumnIndex("COUNT");
+
+            res = c.getInt(countColIndex);
+        }
+        c.close();
+        return res;
+
+    }
     @Override
     public long addLang(Language language) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -114,9 +135,7 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public long addTranslate(Translate field) {
-       /* if (!cache.isEmpty()) {
-            cache.add(field);
-        }*/
+        countTranslates++;
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -128,7 +147,12 @@ public class DBServiceImpl implements DBService {
         values.put(TranslateEntry.WORD_TO_ID_COLUMN, to.getId());
         values.put(TranslateEntry.IS_FAVORITE_COLUMN, field.isFavorite() ? 1 : 0);
 
-        return db.insert(TranslateEntry.TABLE_NAME, null, values);
+        long id = db.insert(TranslateEntry.TABLE_NAME, null, values);
+        if (cache.size() + 1 == countTranslates) {
+            cache.add(0, field);
+            field.setId(id);
+        }
+        return id;
     }
 
     @Override
@@ -154,9 +178,10 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public List<Translate> getTranslates(int limit) {
-       /* if (!cache.isEmpty() && limit > ) {
-            return new ArrayList<>(cache.subList(0, Math.min(cache.size(), limit)));
-        }*/
+        int size = Math.min(countTranslates, limit);
+        if (cache.size() >= size) {
+            return new ArrayList<>(cache.subList(0, size));
+        }
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -205,7 +230,9 @@ public class DBServiceImpl implements DBService {
 
                 Translate tr = new Translate(id, from, to, isFavorite);
                 fields.add(tr);
-                //cache.add(tr);
+                if (fields.size() > cache.size()) {
+                    cache.add(tr);
+                }
             } while (c.moveToNext());
         }
         c.close();
@@ -267,7 +294,9 @@ public class DBServiceImpl implements DBService {
         String selection = TranslateEntry._ID + " = ?";
         String[] selectionArgs = { String.valueOf(field.getId()) };
 
-        //cache.remove(field);
+        cache.remove(field);
+        countTranslates--;
+
         db.delete(TranslateEntry.TABLE_NAME, selection, selectionArgs);
     }
 

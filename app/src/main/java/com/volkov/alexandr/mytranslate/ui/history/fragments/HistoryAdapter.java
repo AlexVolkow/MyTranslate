@@ -50,13 +50,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<Holder> implements Tran
             @Override
             public void onClick(View v) {
                 if (!translate.isFavorite()) {
-                    dbService.makeFavorite(translate);
+                    dbService.makeFavorite(translate.getTranslate());
                     Log.i(LOG_TAG, "Translate " + translate + " added to favorite");
                 } else {
-                    dbService.makeUnFavorite(translate);
+                    dbService.makeUnFavorite(translate.getTranslate());
                     Log.i(LOG_TAG, "Translate " + translate + " removed from favorite");
                 }
-                //holder.fav.setChecked(!translate.isFavorite());
                 translate.setFavorite(!translate.isFavorite());
             }
         });

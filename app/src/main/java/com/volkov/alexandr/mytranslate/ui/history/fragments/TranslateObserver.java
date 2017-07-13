@@ -9,11 +9,12 @@ import java.util.Set;
 /**
  * Created by AlexandrVolkov on 13.07.2017.
  */
-public class TranslateObserver extends Translate{
+public class TranslateObserver{
+    private Translate translate;
     private static Set<FavoriteCallback> subscribers = new HashSet<>();
 
-    public TranslateObserver(long id, Word from, Word to, boolean isFavorite) {
-        super(id, from, to, isFavorite);
+    public TranslateObserver(Translate translate) {
+        this.translate = translate;
     }
 
     public static void subscribe(FavoriteCallback callback) {
@@ -21,7 +22,7 @@ public class TranslateObserver extends Translate{
     }
 
     public void setFavorite(boolean favorite) {
-        super.setFavorite(favorite);
+        translate.setFavorite(favorite);
         notifySubscribers();
     }
 
@@ -31,17 +32,50 @@ public class TranslateObserver extends Translate{
         }
     }
 
-    public interface FavoriteCallback {
-        void onFavoriteStatusChanged(TranslateObserver translate);
+    public long getId() {
+        return translate.getId();
+    }
+
+    public void setId(long id) {
+        translate.setId(id);
+    }
+
+    public Word getFrom() {
+        return translate.getFrom();
+    }
+
+    public Word getTo() {
+        return translate.getTo();
+    }
+
+    public boolean isFavorite() {
+        return translate.isFavorite();
+    }
+
+    protected Translate getTranslate() {
+        return translate;
+    }
+
+    public void setTranslate(Translate translate) {
+        this.translate = translate;
     }
 
     @Override
     public boolean equals(Object o) {
-        return super.equals(o);
+        if (this == o) return true;
+        if (!(o instanceof TranslateObserver)) return false;
+
+        TranslateObserver observer = (TranslateObserver) o;
+
+        return translate != null ? translate.equals(observer.translate) : observer.translate == null;
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return translate != null ? translate.hashCode() : 0;
+    }
+
+    public interface FavoriteCallback {
+        void onFavoriteStatusChanged(TranslateObserver translate);
     }
 }
