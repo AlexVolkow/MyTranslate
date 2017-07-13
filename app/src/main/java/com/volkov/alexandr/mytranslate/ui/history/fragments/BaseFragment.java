@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import com.volkov.alexandr.mytranslate.R;
 import com.volkov.alexandr.mytranslate.db.DBService;
 import com.volkov.alexandr.mytranslate.db.DBServiceImpl;
@@ -21,8 +22,9 @@ import static com.volkov.alexandr.mytranslate.ui.history.HistoryManagerFragment.
  * Created by AlexandrVolkov on 12.07.2017.
  */
 public abstract class BaseFragment extends Fragment {
-    protected ArrayList<TranslateObserver> favorites;
+    protected ArrayList<TranslateObserver> translates;
     protected DBService dbService;
+    protected TextView tvEmpty;
 
     public BaseFragment() {}
 
@@ -35,14 +37,22 @@ public abstract class BaseFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             ArrayList<Translate> translates = args.getParcelableArrayList(HISTORY);
-            favorites = new ArrayList<>();
+            this.translates = new ArrayList<>();
             for (Translate translate : translates) {
                 TranslateObserver favorite = new TranslateObserver(translate);
-                favorites.add(favorite);
+                this.translates.add(favorite);
             }
         }
 
         View view =  inflater.inflate(R.layout.fragment_history, container, false);
+
+        tvEmpty = (TextView) view.findViewById(R.id.tv_empty_history);
+        if (translates.isEmpty()) {
+            tvEmpty.setText(getEmptyPlaceholder());
+            tvEmpty.setVisibility(View.VISIBLE);
+        } else {
+            tvEmpty.setVisibility(View.GONE);
+        }
 
         RecyclerView history = (RecyclerView) view.findViewById(R.id.history_view);
         history.setHasFixedSize(true);
@@ -63,5 +73,7 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected abstract RecyclerView.Adapter<Holder> getAdapter();
+
+    protected abstract String getEmptyPlaceholder();
 }
 

@@ -51,10 +51,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<Holder> implements Tran
             public void onClick(View v) {
                 if (!translate.isFavorite()) {
                     dbService.makeFavorite(translate.getTranslate());
-                    Log.i(LOG_TAG, "Translate " + translate + " added to favorite");
+                    Log.i(LOG_TAG, "Translate " + translate.getTranslate() + " added to favorite");
                 } else {
                     dbService.makeUnFavorite(translate.getTranslate());
-                    Log.i(LOG_TAG, "Translate " + translate + " removed from favorite");
+                    Log.i(LOG_TAG, "Translate " + translate.getTranslate() + " removed from favorite");
                 }
                 translate.setFavorite(!translate.isFavorite());
             }
@@ -67,15 +67,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<Holder> implements Tran
     }
 
     public void deleteItem(TranslateObserver favorite) {
-        int idx = dataSet.indexOf(favorite);
-        dataSet.remove(idx);
-        notifyItemRemoved(idx);
+        dataSet.remove(favorite);
+        notifyDataSetChanged();
     }
 
     @Override
     public void onFavoriteStatusChanged(TranslateObserver translate) {
         int idx = dataSet.indexOf(translate);
-        notifyItemChanged(idx);
+        notifyDataSetChanged();
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.volkov.alexandr.mytranslate.ui.history.fragments;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import com.volkov.alexandr.mytranslate.db.DBService;
 
 import java.util.ArrayList;
@@ -15,15 +16,11 @@ import static com.volkov.alexandr.mytranslate.LogHelper.makeLogTag;
 public class FavoriteAdapter extends HistoryAdapter {
     private static final String LOG_TAG = makeLogTag(FavoriteAdapter.class);
 
-    public FavoriteAdapter(List<TranslateObserver> dataSet, DBService dbService) {
+    private TextView tvEmpty;
+
+    public FavoriteAdapter(List<TranslateObserver> dataSet, DBService dbService, TextView tvEmpty) {
         super(dataSet, dbService);
-        List<TranslateObserver> favorite = new ArrayList<>();
-        for (TranslateObserver translate : dataSet) {
-            if (translate.isFavorite()) {
-                favorite.add(translate);
-            }
-        }
-        super.dataSet = favorite;
+        this.tvEmpty = tvEmpty;
     }
 
     @Override
@@ -46,6 +43,11 @@ public class FavoriteAdapter extends HistoryAdapter {
             deleteItem(translate);
         } else {
             addItem(translate);
+        }
+        if (dataSet.isEmpty()) {
+            tvEmpty.setVisibility(View.VISIBLE);
+        } else {
+            tvEmpty.setVisibility(View.GONE);
         }
     }
 }

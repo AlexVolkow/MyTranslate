@@ -11,4 +11,6 @@
     <string name="repeat">Повторить</string>
     <string name="inf_yandex_translate_api"><![CDATA[Приложение использует <a href="https://tech.yandex.ru/translate">Yandex Translate API</a>]]></string>
     <string name="inf_developer"><![CDATA[Разработал <a href="https://github.com/AlexVolkow">Александр Волков</a> в качестве тестового задания для Yandex Mobilization 2017]]></string>
+    <string name="empty_history">У вас пока нет истории переводов</string>
+    <string name="empty_favorite">У вас пока нет избранных переводов</string>
 </resources>
