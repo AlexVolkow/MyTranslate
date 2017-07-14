@@ -1,4 +1,4 @@
-package com.volkov.alexandr.mytranslate;
+package com.volkov.alexandr.mytranslate.utils;
 
 /**
  * Created by AlexandrVolkov on 07.07.2017.

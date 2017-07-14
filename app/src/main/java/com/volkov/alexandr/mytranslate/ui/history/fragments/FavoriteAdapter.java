@@ -5,10 +5,9 @@ import android.view.View;
 import android.widget.TextView;
 import com.volkov.alexandr.mytranslate.db.DBService;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.volkov.alexandr.mytranslate.LogHelper.makeLogTag;
+import static com.volkov.alexandr.mytranslate.utils.LogHelper.makeLogTag;
 
 /**
  * Created by AlexandrVolkov on 12.07.2017.

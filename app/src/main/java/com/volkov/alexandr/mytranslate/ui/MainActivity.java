@@ -2,33 +2,32 @@ package com.volkov.alexandr.mytranslate.ui;
 
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import com.android.volley.VolleyError;
 import com.volkov.alexandr.mytranslate.R;
 import com.volkov.alexandr.mytranslate.api.ResponseListener;
 import com.volkov.alexandr.mytranslate.api.TranslateApi;
-import com.volkov.alexandr.mytranslate.model.Translate;
-import com.volkov.alexandr.mytranslate.model.Word;
 import com.volkov.alexandr.mytranslate.db.DBService;
 import com.volkov.alexandr.mytranslate.db.DBServiceImpl;
 import com.volkov.alexandr.mytranslate.model.Language;
+import com.volkov.alexandr.mytranslate.model.Translate;
+import com.volkov.alexandr.mytranslate.model.Word;
 import com.volkov.alexandr.mytranslate.ui.history.HistoryManagerFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.volkov.alexandr.mytranslate.LogHelper.makeLogTag;
+import static com.volkov.alexandr.mytranslate.utils.AndroidUtils.showAlert;
+import static com.volkov.alexandr.mytranslate.utils.LogHelper.makeLogTag;
 
 public class MainActivity extends AppCompatActivity implements ResponseListener<List<Language>> {
     private static final String LOG_TAG = makeLogTag(MainActivity.class);
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
             pd.hide();
         }
         Log.e(LOG_TAG, "Error with downloading list of languages. " + error);
-        showAlert("Error with downloading list of languages. " +
+        showAlert(this,"Error with downloading list of languages. " +
                 "Please check you network connection and restart application");
         finish();
     }
@@ -78,21 +77,6 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
     public void onResponse(List<Language> response) {
         langs = response;
         new LangsToDB().execute();
-    }
-
-    public void showAlert(String msg) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Failed downloading")
-                .setMessage(msg)
-                .setCancelable(false)
-                .setNegativeButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-        AlertDialog alert = builder.create();
-        alert.show();
     }
 
     private Fragment makeTranslateFragment() {

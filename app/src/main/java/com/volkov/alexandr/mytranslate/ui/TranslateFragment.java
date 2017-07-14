@@ -4,32 +4,32 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.util.Pair;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.*;
 import com.android.volley.VolleyError;
 import com.volkov.alexandr.mytranslate.R;
-import com.volkov.alexandr.mytranslate.model.Language;
-import com.volkov.alexandr.mytranslate.api.ResponseListener;
 import com.volkov.alexandr.mytranslate.api.ApiCode;
+import com.volkov.alexandr.mytranslate.api.ResponseListener;
 import com.volkov.alexandr.mytranslate.api.TranslateApi;
-import com.volkov.alexandr.mytranslate.model.Translate;
-import com.volkov.alexandr.mytranslate.model.Word;
 import com.volkov.alexandr.mytranslate.db.DBService;
 import com.volkov.alexandr.mytranslate.db.DBServiceImpl;
+import com.volkov.alexandr.mytranslate.model.Dictionary;
+import com.volkov.alexandr.mytranslate.model.Language;
+import com.volkov.alexandr.mytranslate.model.Translate;
+import com.volkov.alexandr.mytranslate.model.Word;
 
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
-import static com.volkov.alexandr.mytranslate.LogHelper.makeLogTag;
 import static com.volkov.alexandr.mytranslate.ui.SwitchLanguageActivity.LANG_KEY;
+import static com.volkov.alexandr.mytranslate.utils.AndroidUtils.hasConnection;
+import static com.volkov.alexandr.mytranslate.utils.AndroidUtils.showAlert;
+import static com.volkov.alexandr.mytranslate.utils.LogHelper.makeLogTag;
 
 
 public class TranslateFragment extends Fragment implements View.OnClickListener,
@@ -50,6 +50,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
     private ArrayList<Language> langs;
     private DBService dbService;
     private TranslateApi api;
+    private ResponseListener<Dictionary> dictionaryListener;
 
     private TextView tvFrom;
     private TextView tvTo;
@@ -58,6 +59,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
     private EditText etTrText;
     private Button btnRepeat;
     private ToggleButton ibAddFavorite;
+    private TextView article;
 
     public TranslateFragment() {
     }
@@ -80,6 +82,8 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_translate, container, false);
 
+        article = (TextView) view.findViewById(R.id.article);
+        article.setMovementMethod(new ScrollingMovementMethod());
         tvFrom = (TextView) view.findViewById(R.id.tv_from);
         tvTo = (TextView) view.findViewById(R.id.tv_to);
         tvTranslate = (TextView) view.findViewById(R.id.tv_translate);
@@ -112,6 +116,21 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
             tvTranslate.setText(wordTo.getText());
 
             ibAddFavorite.setChecked(last.isFavorite());
+
+            dictionaryListener = new ResponseListener<Dictionary>() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(getContext(), "Невозможно скачать статью из Яндекс.Словарь, попрбуйте позже",
+                            Toast.LENGTH_SHORT).show();
+                    Log.e(LOG_TAG, "Can't download the article from the dictionary " + error);
+                }
+
+                @Override
+                public void onResponse(Dictionary response) {
+                    article.setText(DictionaryDecorator.decorate(response));
+                }
+            };
+            api.dictionary(last.getFrom(), to, dictionaryListener);
         }
 
         btnRepeat.setOnClickListener(new View.OnClickListener() {
@@ -161,23 +180,6 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
         tvFrom.setOnClickListener(this);
         tvTo.setOnClickListener(this);
 
-        /*etTrText.setOnEditorActionListener(
-                new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        ibAddFavorite.setChecked(false);
-                        if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE ||
-                                (event != null && event.getAction() == KeyEvent.ACTION_DOWN &&
-                                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                            if (event == null || !event.isShiftPressed()) {
-                                translate();
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                });*/
-
         trl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -193,7 +195,9 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
             if (text.isEmpty()) {
                 Toast.makeText(getContext(), "Введена пустая строка", Toast.LENGTH_SHORT).show();
             } else {
-                api.translate(new Word(text, from), to, TranslateFragment.this);
+                Word word = new Word(text, from);
+                api.translate(word, to, TranslateFragment.this);
+                api.dictionary(word, to, dictionaryListener);
             }
         } else {
             failedTranslate();
@@ -259,7 +263,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        // TODO processing error
+        showAlert(getContext(), "Произошла ошибка во время перевода текста, пожалуйста попробуйте позже");
     }
 
     @Override
@@ -313,22 +317,5 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
         tvTranslate.setText("");
         tvError.setVisibility(View.VISIBLE);
         btnRepeat.setVisibility(View.VISIBLE);
-    }
-
-    public static boolean hasConnection(final Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            return true;
-        }
-        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            return true;
-        }
-        wifiInfo = cm.getActiveNetworkInfo();
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            return true;
-        }
-        return false;
     }
 }
