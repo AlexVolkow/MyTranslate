@@ -27,8 +27,8 @@ import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
 import static com.volkov.alexandr.mytranslate.ui.SwitchLanguageActivity.LANG_KEY;
-import static com.volkov.alexandr.mytranslate.utils.AndroidUtils.hasConnection;
-import static com.volkov.alexandr.mytranslate.utils.AndroidUtils.showAlert;
+import static com.volkov.alexandr.mytranslate.utils.AndroidHelper.hasConnection;
+import static com.volkov.alexandr.mytranslate.utils.AndroidHelper.showAlert;
 import static com.volkov.alexandr.mytranslate.utils.LogHelper.makeLogTag;
 
 

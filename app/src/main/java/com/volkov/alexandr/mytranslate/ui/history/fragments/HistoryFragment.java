@@ -14,7 +14,7 @@ public class HistoryFragment extends BaseFragment {
     public HistoryFragment() {}
 
     @Override
-    protected RecyclerView.Adapter<Holder> getAdapter() {
+    protected HistoryAdapter getAdapter() {
         return new HistoryAdapter(translates, dbService);
     }
 
@@ -25,5 +25,10 @@ public class HistoryFragment extends BaseFragment {
     @Override
     protected String getEmptyPlaceholder() {
         return getString(R.string.empty_history);
+    }
+
+    @Override
+    protected String getHintPlaceHolder() {
+        return getString(R.string.search_in_history);
     }
 }

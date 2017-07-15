@@ -13,4 +13,6 @@
     <string name="inf_developer"><![CDATA[Разработал <a href="https://github.com/AlexVolkow">Александр Волков</a> в качестве тестового задания для Yandex Mobilization 2017]]></string>
     <string name="empty_history">У вас пока нет истории переводов</string>
     <string name="empty_favorite">У вас пока нет избранных переводов</string>
+    <string name="search_in_favorite">Найти в избранном</string>
+    <string name="search_in_history">Найти в истории</string>
 </resources>

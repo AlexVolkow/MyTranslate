@@ -75,6 +75,11 @@ public class TranslateObserver{
         return translate != null ? translate.hashCode() : 0;
     }
 
+    @Override
+    public String toString() {
+        return "TranslateObserver{" + translate + '}';
+    }
+
     public interface FavoriteCallback {
         void onFavoriteStatusChanged(TranslateObserver translate);
     }

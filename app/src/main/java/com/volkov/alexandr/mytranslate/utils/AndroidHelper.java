@@ -1,15 +1,15 @@
 package com.volkov.alexandr.mytranslate.utils;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
-import android.content.DialogInterface;
 
 /**
  * Created by AlexandrVolkov on 14.07.2017.
  */
-public class AndroidUtils {
+public class AndroidHelper {
     public static void showAlert(Context context, String msg) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Failed downloading")

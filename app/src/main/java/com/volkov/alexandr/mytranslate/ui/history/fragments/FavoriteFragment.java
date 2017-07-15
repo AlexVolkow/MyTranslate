@@ -14,7 +14,7 @@ public class FavoriteFragment extends BaseFragment {
     public FavoriteFragment() {}
 
     @Override
-    protected RecyclerView.Adapter<Holder> getAdapter() {
+    protected HistoryAdapter getAdapter() {
         return new FavoriteAdapter(translates, dbService, tvEmpty);
     }
 
@@ -31,5 +31,10 @@ public class FavoriteFragment extends BaseFragment {
     @Override
     protected String getEmptyPlaceholder() {
         return getString(R.string.empty_favorite);
+    }
+
+    @Override
+    protected String getHintPlaceHolder() {
+        return getString(R.string.search_in_favorite);
     }
 }

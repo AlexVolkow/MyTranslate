@@ -73,7 +73,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<Holder> implements Tran
 
     @Override
     public void onFavoriteStatusChanged(TranslateObserver translate) {
-        int idx = dataSet.indexOf(translate);
+        notifyDataSetChanged();
+    }
+
+    public void setDataSet(List<TranslateObserver> dataSet) {
+        this.dataSet = dataSet;
         notifyDataSetChanged();
     }
 

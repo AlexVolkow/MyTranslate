@@ -150,7 +150,7 @@ public class TranslateApi {
                                     dictionary.addTranslate(pos, translate);
                                 }
                             }
-                            Log.i(LOG_TAG, "Downloaded article " + dictionary);
+                            Log.i(LOG_TAG, "Downloaded article about " + dictionary);
                             listener.onResponse(dictionary);
                         } catch (JSONException e) {
                             e.printStackTrace();
