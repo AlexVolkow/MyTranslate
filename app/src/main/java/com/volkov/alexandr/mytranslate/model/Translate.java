@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by AlexandrVolkov on 10.07.2017.
  */
-public class Translate implements Parcelable{
+public class Translate implements Parcelable {
     private long id;
     private final Word from;
     private final Word to;
@@ -69,7 +69,7 @@ public class Translate implements Parcelable{
 
     @Override
     public String toString() {
-        return  from + "-" + to;
+        return from + "-" + to;
     }
 
     @Override

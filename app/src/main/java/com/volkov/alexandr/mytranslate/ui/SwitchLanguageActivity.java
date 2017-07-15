@@ -1,13 +1,15 @@
 package com.volkov.alexandr.mytranslate.ui;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.volkov.alexandr.mytranslate.R;
 import com.volkov.alexandr.mytranslate.model.Language;
 
@@ -22,17 +24,28 @@ public class SwitchLanguageActivity extends AppCompatActivity {
     private ArrayList<Language> langs;
     private Language curr;
 
+    @BindView(R.id.back_toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.lang_list)
+    ListView langList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_switch_language);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         langs = intent.getParcelableArrayListExtra(LANGS_KEY);
         curr = intent.getParcelableExtra(CURR_LANG_KEY);
 
-        ListView langList = (ListView) findViewById(R.id.lang_list);
 
+        initListOfLanguage();
+        initToolbar();
+    }
+
+    private void initListOfLanguage() {
         Adapter adapter = new Adapter(langs, curr);
         langList.setAdapter(adapter);
         langList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -46,10 +59,10 @@ public class SwitchLanguageActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.back_toolbar);
+    private void initToolbar() {
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setTitle("Язык ввода");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -74,7 +87,7 @@ public class SwitchLanguageActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView;
             if (view == null) {
-                view =  LayoutInflater.from(parent.getContext())
+                view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.lang_item, parent, false);
             }
 

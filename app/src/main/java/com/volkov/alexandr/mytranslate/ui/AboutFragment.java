@@ -9,11 +9,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.volkov.alexandr.mytranslate.R;
-import org.w3c.dom.Text;
 
 
 public class AboutFragment extends Fragment {
+    private Unbinder unbinder;
+
+    @BindView(R.id.tv_developer)
+    TextView developer;
+
+    @BindView(R.id.tv_yandex_translate_api)
+    TextView api;
+
     public AboutFragment() {}
 
 
@@ -21,13 +31,19 @@ public class AboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_about, container, false);
-        TextView developer = (TextView) view.findViewById(R.id.tv_developer);
-        TextView api = (TextView) view.findViewById(R.id.tv_yandex_translate_api);
+        unbinder = ButterKnife.bind(this, view);
+
         developer.setMovementMethod(LinkMovementMethod.getInstance());
         api.setMovementMethod(LinkMovementMethod.getInstance());
+
         developer.setText(Html.fromHtml(getString(R.string.inf_developer)));
         api.setText(Html.fromHtml(getString(R.string.inf_yandex_translate_api)));
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
 }

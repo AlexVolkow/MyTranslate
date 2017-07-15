@@ -1,13 +1,11 @@
 package com.volkov.alexandr.mytranslate.ui;
 
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -156,9 +154,5 @@ public class MainActivity extends AppCompatActivity implements ResponseListener<
             }
             initBottomNavigation();
         }
-    }
-
-    public void requestMultiplePermissions() {
-
     }
 }

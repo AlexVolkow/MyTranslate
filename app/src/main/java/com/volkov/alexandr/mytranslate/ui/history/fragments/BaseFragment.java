@@ -9,8 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import com.volkov.alexandr.mytranslate.R;
 import com.volkov.alexandr.mytranslate.db.DBService;
 import com.volkov.alexandr.mytranslate.db.DBServiceImpl;
@@ -28,15 +31,24 @@ import static com.volkov.alexandr.mytranslate.utils.LogHelper.makeLogTag;
 public abstract class BaseFragment extends Fragment {
     private static final String LOG_TAG = makeLogTag(BaseFragment.class);
 
+    private Unbinder unbinder;
+
+    @BindView(R.id.tv_empty_history)
+    TextView tvEmpty;
+    @BindView(R.id.et_search)
+    EditText etSearch;
+    @BindView(R.id.history_view)
+    RecyclerView history;
+
     protected ArrayList<TranslateObserver> translates;
     protected DBService dbService;
-    protected TextView tvEmpty;
 
     private ArrayList<TranslateObserver> found = new ArrayList<>();
 
     private HistoryAdapter adapter;
 
-    public BaseFragment() {}
+    public BaseFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,9 +66,9 @@ public abstract class BaseFragment extends Fragment {
             }
         }
 
-        View view =  inflater.inflate(R.layout.fragment_history, container, false);
+        View view = inflater.inflate(R.layout.fragment_history, container, false);
+        unbinder = ButterKnife.bind(this, view);
 
-        tvEmpty = (TextView) view.findViewById(R.id.tv_empty_history);
         if (translates.isEmpty()) {
             tvEmpty.setText(getEmptyPlaceholder());
             tvEmpty.setVisibility(View.VISIBLE);
@@ -64,8 +76,8 @@ public abstract class BaseFragment extends Fragment {
             tvEmpty.setVisibility(View.GONE);
         }
 
-        initSearch(view);
-        initRecyclerView(view);
+        etSearch.setHint(getHintPlaceHolder());
+        initRecyclerView();
         return view;
     }
 
@@ -76,47 +88,41 @@ public abstract class BaseFragment extends Fragment {
         return fragment;
     }
 
-    private void initSearch(View view) {
-        final EditText etSearch = (EditText) view.findViewById(R.id.et_search);
-        etSearch.setHint(getHintPlaceHolder());
-
-        ImageButton ibDelete = (ImageButton) view.findViewById(R.id.ib_clear_search);
-        ibDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                etSearch.getText().clear();
-                adapter.setDataSet(translates);
-            }
-        });
-
-        ImageButton search = (ImageButton) view.findViewById(R.id.ib_search);
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String searchStr = etSearch.getText().toString();
-                found.clear();
-
-                for (TranslateObserver translate: translates) {
-                    if (translate.getFrom().getText().contains(searchStr) ||
-                            translate.getTo().getText().contains(searchStr)) {
-                        found.add(translate);
-                    }
-                }
-
-                adapter.setDataSet(found);
-                Log.i(LOG_TAG, "For search '" + searchStr + "' found " + found.size() + " translates");
-            }
-        });
+    @OnClick(R.id.ib_clear_search)
+    public void clearSearch() {
+        etSearch.getText().clear();
+        adapter.setDataSet(translates);
     }
 
-    private void initRecyclerView(View view) {
-        RecyclerView history = (RecyclerView) view.findViewById(R.id.history_view);
+    @OnClick(R.id.ib_search)
+    public void search() {
+        String searchStr = etSearch.getText().toString();
+        found.clear();
+
+        for (TranslateObserver translate : translates) {
+            if (translate.getFrom().getText().contains(searchStr) ||
+                    translate.getTo().getText().contains(searchStr)) {
+                found.add(translate);
+            }
+        }
+
+        adapter.setDataSet(found);
+        Log.i(LOG_TAG, "For search '" + searchStr + "' found " + found.size() + " translates");
+    }
+
+    private void initRecyclerView() {
         history.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         history.setLayoutManager(layoutManager);
         history.addItemDecoration(new SimpleDividerItemDecoration(getContext(), false));
         adapter = getAdapter();
         history.setAdapter(adapter);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     protected abstract HistoryAdapter getAdapter();

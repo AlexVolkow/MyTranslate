@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by AlexandrVolkov on 07.07.2017.
  */
-public class Language implements Parcelable{
+public class Language implements Parcelable {
     private long id;
     private final String code;
     private final String label;

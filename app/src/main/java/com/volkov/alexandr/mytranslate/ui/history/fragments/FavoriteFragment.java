@@ -1,7 +1,6 @@
 package com.volkov.alexandr.mytranslate.ui.history.fragments;
 
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import com.volkov.alexandr.mytranslate.R;
 import com.volkov.alexandr.mytranslate.model.Translate;
 

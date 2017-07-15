@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class DictionaryDecorator {
     private static final int DARK_RED = Color.rgb(153, 51, 0);
-    public static final int DARK_CYAN = Color.rgb(0, 153, 204);
+    private static final int DARK_CYAN = Color.rgb(0, 153, 204);
 
     public static Spannable decorate(Dictionary dictionary) {
         SpannableStringBuilder str = new SpannableStringBuilder();

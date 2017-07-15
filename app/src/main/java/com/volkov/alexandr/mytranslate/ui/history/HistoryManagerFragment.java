@@ -8,6 +8,9 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.volkov.alexandr.mytranslate.R;
 import com.volkov.alexandr.mytranslate.model.Translate;
 import com.volkov.alexandr.mytranslate.ui.history.fragments.FavoriteFragment;
@@ -19,8 +22,12 @@ import java.util.ArrayList;
 public class HistoryManagerFragment extends Fragment {
     public static final String HISTORY = "HISTORY";
 
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
+    private Unbinder unbinder;
+
+    @BindView(R.id.tab_layout)
+    TabLayout tabLayout;
+    @BindView(R.id.viewpager)
+    ViewPager viewPager;
 
     private ArrayList<Translate> translates;
 
@@ -30,18 +37,16 @@ public class HistoryManagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         Bundle args = getArguments();
         if (args != null) {
             translates = args.getParcelableArrayList(HISTORY);
         }
 
         View view =  inflater.inflate(R.layout.fragment_history_manager, container, false);
+        unbinder = ButterKnife.bind(this, view);
 
-        viewPager = (ViewPager) view.findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
         return view;
@@ -61,5 +66,11 @@ public class HistoryManagerFragment extends Fragment {
         HistoryManagerFragment fragment = new HistoryManagerFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

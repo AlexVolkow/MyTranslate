@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by AlexandrVolkov on 10.07.2017.
  */
-public class Word implements Parcelable{
+public class Word implements Parcelable {
     private long id;
     private final String text;
     private final Language lan;

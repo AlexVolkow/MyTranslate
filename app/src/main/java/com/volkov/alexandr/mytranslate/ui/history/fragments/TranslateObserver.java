@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Created by AlexandrVolkov on 13.07.2017.
  */
-public class TranslateObserver{
+public class TranslateObserver {
     private Translate translate;
     private static Set<FavoriteCallback> subscribers = new HashSet<>();
 

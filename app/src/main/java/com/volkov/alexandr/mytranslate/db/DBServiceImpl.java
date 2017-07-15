@@ -4,16 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import com.volkov.alexandr.mytranslate.model.Language;
-import com.volkov.alexandr.mytranslate.model.Translate;
-import com.volkov.alexandr.mytranslate.model.Word;
 import com.volkov.alexandr.mytranslate.db.contract.LanguagesContract.LanguagesEntry;
 import com.volkov.alexandr.mytranslate.db.contract.TranslateContract.TranslateEntry;
 import com.volkov.alexandr.mytranslate.db.contract.WordContract.WordEntry;
+import com.volkov.alexandr.mytranslate.model.Language;
+import com.volkov.alexandr.mytranslate.model.Translate;
+import com.volkov.alexandr.mytranslate.model.Word;
 
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,7 +45,7 @@ public class DBServiceImpl implements DBService {
         List<Language> langs = new ArrayList<>();
 
         if (c.moveToFirst()) {
-            int idColIndex =c.getColumnIndex(LanguagesEntry._ID);
+            int idColIndex = c.getColumnIndex(LanguagesEntry._ID);
             int codeColIndex = c.getColumnIndex(LanguagesEntry.COLUMN_CODE);
             int labelColIndex = c.getColumnIndex(LanguagesEntry.COLUMN_LABEL);
 
@@ -62,7 +60,7 @@ public class DBServiceImpl implements DBService {
     private int getCountTranslates() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String[] columns = new String[] { "COUNT(*) AS COUNT" };
+        String[] columns = new String[]{"COUNT(*) AS COUNT"};
         Cursor c = db.query(TranslateEntry.TABLE_NAME, columns, null,
                 null, null, null, null);
 
@@ -76,6 +74,7 @@ public class DBServiceImpl implements DBService {
         return res;
 
     }
+
     @Override
     public long addLang(Language language) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -92,14 +91,14 @@ public class DBServiceImpl implements DBService {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String selection = LanguagesEntry.COLUMN_CODE + " = ?";
-        String[] selectionArgs = { code };
+        String[] selectionArgs = {code};
 
         Cursor c = db.query(LanguagesEntry.TABLE_NAME, null, selection, selectionArgs,
-                null, null , null);
+                null, null, null);
 
         Language res = null;
         if (c.moveToFirst()) {
-            int idColIndex =c.getColumnIndex(LanguagesEntry._ID);
+            int idColIndex = c.getColumnIndex(LanguagesEntry._ID);
             int labelColIndex = c.getColumnIndex(LanguagesEntry.COLUMN_LABEL);
 
             res = new Language(c.getLong(idColIndex), code, c.getString(labelColIndex));
@@ -160,10 +159,10 @@ public class DBServiceImpl implements DBService {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String selection = LanguagesEntry._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(id) };
+        String[] selectionArgs = {String.valueOf(id)};
 
         Cursor c = db.query(LanguagesEntry.TABLE_NAME, null, selection, selectionArgs,
-                null, null , null);
+                null, null, null);
 
         Language res = null;
         if (c.moveToFirst()) {
@@ -186,26 +185,26 @@ public class DBServiceImpl implements DBService {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String table = TranslateEntry.TABLE_NAME + " INNER JOIN " + WordEntry.TABLE_NAME + " ON "
-                + TranslateEntry.TABLE_NAME + "." + TranslateEntry.WORD_FROM_ID_COLUMN +" = " +
+                + TranslateEntry.TABLE_NAME + "." + TranslateEntry.WORD_FROM_ID_COLUMN + " = " +
                 WordEntry.TABLE_NAME + "." + WordEntry._ID + " OR " +
-                TranslateEntry.TABLE_NAME + "." + TranslateEntry.WORD_TO_ID_COLUMN +" = " +
+                TranslateEntry.TABLE_NAME + "." + TranslateEntry.WORD_TO_ID_COLUMN + " = " +
                 WordEntry.TABLE_NAME + "." + WordEntry._ID;
 
         String[] columns = new String[]{TranslateEntry.TABLE_NAME + ".*",
                 "group_concat(" + WordEntry.TABLE_NAME + "." + WordEntry.TEXT_COLUMN + ", '-') AS " + TRANSLATE,
-                "group_concat(" + WordEntry.TABLE_NAME + "." + WordEntry.LANGUAGE_ID_COLUMN+ ", '-') AS "  + LANGS_ID};
+                "group_concat(" + WordEntry.TABLE_NAME + "." + WordEntry.LANGUAGE_ID_COLUMN + ", '-') AS " + LANGS_ID};
 
         String groupBy = TranslateEntry.TABLE_NAME + "." + TranslateEntry._ID;
 
         String orderBy = TranslateEntry._ID + " DESC";
 
-        Cursor c = db.query(table,columns, null, null, groupBy,
+        Cursor c = db.query(table, columns, null, null, groupBy,
                 null, orderBy, String.valueOf(limit));
 
         List<Translate> fields = new ArrayList<>();
 
         if (c.moveToFirst()) {
-            int idColIndex =c.getColumnIndex(TranslateEntry._ID);
+            int idColIndex = c.getColumnIndex(TranslateEntry._ID);
             int fromIdColIndex = c.getColumnIndex(TranslateEntry.WORD_FROM_ID_COLUMN);
             int toIdColIndex = c.getColumnIndex(TranslateEntry.WORD_TO_ID_COLUMN);
             int translateColIndex = c.getColumnIndex(TRANSLATE);
@@ -254,10 +253,10 @@ public class DBServiceImpl implements DBService {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String selection = WordEntry.TEXT_COLUMN + " = ? and " + WordEntry.LANGUAGE_ID_COLUMN + " = ?";
-        String[] selectionArgs = { word.getText(), String.valueOf(word.getLanguage().getId()) };
+        String[] selectionArgs = {word.getText(), String.valueOf(word.getLanguage().getId())};
 
         Cursor c = db.query(WordEntry.TABLE_NAME, null, selection, selectionArgs,
-                null, null , null);
+                null, null, null);
 
         long res = -1;
         if (c.moveToFirst()) {
@@ -273,10 +272,10 @@ public class DBServiceImpl implements DBService {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String selection = TranslateEntry.WORD_FROM_ID_COLUMN + " = ? and " + TranslateEntry.WORD_TO_ID_COLUMN + " = ?";
-        String[] selectionArgs = { String.valueOf(field.getFrom().getId()), String.valueOf(field.getTo().getId()) };
+        String[] selectionArgs = {String.valueOf(field.getFrom().getId()), String.valueOf(field.getTo().getId())};
 
         Cursor c = db.query(TranslateEntry.TABLE_NAME, null, selection, selectionArgs,
-                null, null , null);
+                null, null, null);
 
         long res = -1;
         if (c.moveToFirst()) {
@@ -292,7 +291,7 @@ public class DBServiceImpl implements DBService {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         String selection = TranslateEntry._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(field.getId()) };
+        String[] selectionArgs = {String.valueOf(field.getId())};
 
         cache.remove(field);
         countTranslates--;
@@ -305,7 +304,7 @@ public class DBServiceImpl implements DBService {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         String selection = TranslateEntry._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(field.getId()) };
+        String[] selectionArgs = {String.valueOf(field.getId())};
 
         ContentValues values = new ContentValues();
         values.put(TranslateEntry.IS_FAVORITE_COLUMN, 1);
@@ -318,7 +317,7 @@ public class DBServiceImpl implements DBService {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         String selection = TranslateEntry._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(field.getId()) };
+        String[] selectionArgs = {String.valueOf(field.getId())};
 
         ContentValues values = new ContentValues();
         values.put(TranslateEntry.IS_FAVORITE_COLUMN, 0);
@@ -331,10 +330,10 @@ public class DBServiceImpl implements DBService {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String selection = TranslateEntry._ID + " = ? ";
-        String[] selectionArgs = { String.valueOf(id) };
+        String[] selectionArgs = {String.valueOf(id)};
 
         Cursor c = db.query(TranslateEntry.TABLE_NAME, null, selection, selectionArgs,
-                null, null , null);
+                null, null, null);
 
         boolean res = false;
         if (c.moveToFirst()) {
