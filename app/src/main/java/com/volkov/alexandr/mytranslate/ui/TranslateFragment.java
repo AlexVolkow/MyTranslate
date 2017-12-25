@@ -4,15 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
+import android.support.v4.util.Pair;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
-import butterknife.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
 import com.android.volley.VolleyError;
 import com.volkov.alexandr.mytranslate.R;
 import com.volkov.alexandr.mytranslate.api.ApiCode;
@@ -27,8 +30,12 @@ import com.volkov.alexandr.mytranslate.model.Word;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
+
 import static android.app.Activity.RESULT_OK;
-import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 import static com.volkov.alexandr.mytranslate.ui.SwitchLanguageActivity.LANG_KEY;
 import static com.volkov.alexandr.mytranslate.utils.AndroidHelper.hasConnection;
 import static com.volkov.alexandr.mytranslate.utils.AndroidHelper.showAlert;
