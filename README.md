@@ -1,5 +1,5 @@
 # MyTranslate
-This is a test assignment for yandex mobile development school 2017(Yandex.Mobilization 2017 Android)
+A copy of the application Yandex.Translate
 
 # APK
 [MyTranslate.apk](https://yadi.sk/d/n_HNW5Zq3L67Qe)
